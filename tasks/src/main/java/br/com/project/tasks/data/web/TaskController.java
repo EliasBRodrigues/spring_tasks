@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.project.tasks.core.Task;
+import br.com.project.tasks.core.model.TaskDTO;
+import br.com.project.tasks.core.model.TaskDTOConverter;
 import br.com.project.tasks.service.TaskService;
 import reactor.core.publisher.Mono;
 
@@ -17,19 +19,23 @@ import reactor.core.publisher.Mono;
 public class TaskController {
 
     private final TaskService taskService;
+    private final TaskDTOConverter converter;
 
-    public TaskController(TaskService taskService) {
+    public TaskController(TaskService taskService, TaskDTOConverter converter) {
         this.taskService = taskService;
+        this.converter = converter;
     }
-
+    
     @GetMapping("/list-task")
-    public Mono<List<Task>> getTasks(){
-        return taskService.list();
+    public Mono<List<TaskDTO>> getTasks(){
+        //return taskService.list();
+        return taskService.list().map(converter::convertList);
     }
 
     @PostMapping("/insert-task")
-    public Mono<Task> insertTask(@RequestBody Task task) {
-        return taskService.insert(task);
+    public Mono<TaskDTO> insertTask(@RequestBody Task task) {
+       // return taskService.insert(task);
+       return taskService.insert(task).map(converter::convert);
     }
 
 }
