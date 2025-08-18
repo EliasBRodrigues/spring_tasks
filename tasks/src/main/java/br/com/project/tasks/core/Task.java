@@ -1,11 +1,15 @@
 package br.com.project.tasks.core;
 
+import org.springframework.data.annotation.Id;
+
 import br.com.project.tasks.core.constant.TaskState;
-import br.com.project.tasks.service.TaskService;
 import lombok.Data;
 
 @Data
 public class Task {
+    @Id
+    private String id;
+    
     private String title;
     private String description;
     private Integer priority;
@@ -21,10 +25,10 @@ public class Task {
     public Task(){}
 
     // adicionando tarefa na lista em service
-    public Task newTask() {
-        TaskService.tasks.add(this);
-        return this;
-    }
+    // public Task newTask() {
+    //     TaskService.tasks.add(this);
+    //     return this;
+    // }
 
     public Task insert(){
         return builderFrom(this).withTaskState(TaskState.INSERT).build();
