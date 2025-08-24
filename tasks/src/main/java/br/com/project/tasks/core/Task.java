@@ -9,78 +9,84 @@ import lombok.Data;
 public class Task {
     @Id
     private String id;
-    
+
     private String title;
     private String description;
     private Integer priority;
     private TaskState state;
 
-    public Task(Builder builder){
+    public Task(Builder builder) {
+        this.id = builder.id;
         this.title = builder.title;
         this.description = builder.description;
         this.priority = builder.priority;
-        this.state= builder.state;
+        this.state = builder.state;
     }
 
-    public Task(){}
+    public Task() {
+    }
 
-    // adicionando tarefa na lista em service
-    // public Task newTask() {
-    //     TaskService.tasks.add(this);
-    //     return this;
-    // }
-
-    public Task insert(){
+    public Task insert() {
         return builderFrom(this).withTaskState(TaskState.INSERT).build();
     }
 
-    public static Builder builder(){
+    public String getId(){
+        return id;
+    }
+
+    public static Builder builder() {
         return new Builder();
     }
 
-
     public static class Builder {
+        private String id;
         private String title;
         private String description;
         private Integer priority;
         private TaskState state;
 
         public Builder(Task task) {
+            this.id = task.id;
             this.title = task.title;
-        this.description = task.description;
-        this.priority = task.priority;
-        this.state= task.state;
+            this.description = task.description;
+            this.priority = task.priority;
+            this.state = task.state;
+        }
+
+        public Builder withId(String id) {
+            this.id = id;
+            return this;
         }
 
         public Builder() {
         }
 
-        public Builder withTitle(String title){
+        public Builder withTitle(String title) {
             this.title = title;
             return this;
         }
 
-        public Builder withDescription(String description){
+        public Builder withDescription(String description) {
             this.description = description;
             return this;
         }
 
-        public Builder withPriority(Integer priority){
+        public Builder withPriority(Integer priority) {
             this.priority = priority;
             return this;
         }
 
-        public Builder withTaskState(TaskState state){
+        public Builder withTaskState(TaskState state) {
             this.state = state;
             return this;
         }
 
-        public Task build(){
+        public Task build() {
             return new Task(this);
         }
     }
 
-    public static Builder builderFrom(Task task){
+    public static Builder builderFrom(Task task) {
         return new Builder(task);
     }
 }
