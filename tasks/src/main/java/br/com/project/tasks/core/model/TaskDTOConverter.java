@@ -41,12 +41,11 @@ public class TaskDTOConverter {
     }
 
     // transform to LIST DTO
-    public List<TaskDTO> convertList(List<Task> tasks) {
-        return Optional.ofNullable(tasks).map(array -> array.stream().map(
-                this::convert).collect(Collectors.toList()))
-
-                .orElse(new ArrayList<>());
-    }
+    // public List<TaskDTO> convertList(List<Task> tasks) {
+    //     return Optional.ofNullable(tasks).map(array -> array.stream().map(
+    //             this::convert).collect(Collectors.toList()))
+    //             .orElse(new ArrayList<>());
+    // }
 
     public Task convert(String id, String title, String description, int priority, TaskState state) {
         return Task.builder().withId(id).withTitle(title).withDescription(description).withPriority(priority)
