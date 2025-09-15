@@ -1,16 +1,21 @@
 package br.com.project.tasks.service;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import br.com.project.tasks.core.Task;
 import br.com.project.tasks.data.repository.TaskCustomRepository;
 import br.com.project.tasks.data.repository.TaskRepository;
+import br.com.project.tasks.data.web.TaskController;
 import reactor.core.publisher.Mono;
 
 @Service
 public class TaskService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskController.class);
+
 
     private final TaskRepository taskRepository;
     private final TaskCustomRepository taskCustomRepository;
@@ -32,7 +37,9 @@ public class TaskService {
     }
 
     private Mono<Task> save(Task task) {
-        return Mono.just(task).map(taskRepository::save);
+        return Mono.just(task).
+            doOnNext(t -> LOGGER.info("saving task with title", task.getTitle())).
+            map(taskRepository::save);
     }
 
     // route returns void

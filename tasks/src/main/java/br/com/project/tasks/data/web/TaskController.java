@@ -1,6 +1,7 @@
 package br.com.project.tasks.data.web;
 
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,6 +23,9 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/web")
 public class TaskController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskController.class);
+
 
     private final TaskService taskService;
     private final TaskDTOConverter converter;
@@ -46,13 +50,16 @@ public class TaskController {
 
     @PostMapping("/insert-task")
     public Mono<TaskDTO> insertTask(@RequestBody TaskDTO taskDTO) {
-        return taskService.insert(converter.convert(taskDTO)).map(converter::convert);
+        return taskService.insert(converter.convert(taskDTO))
+                    .doOnNext(task -> LOGGER.info("task id save {}", taskDTO.getId()))
+                    .map(converter::convert);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public Mono<Void> deleteTask(@PathVariable String id){
-        return Mono.just(id).flatMap(taskService::deleteById);
+        return Mono.just(id).doOnNext(task -> LOGGER.info("task id deleted {}", id)).
+        flatMap(taskService::deleteById);
     }
 
 }
