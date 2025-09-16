@@ -17,11 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.project.tasks.core.constant.TaskState;
 import br.com.project.tasks.core.model.TaskDTO;
 import br.com.project.tasks.core.model.TaskDTOConverter;
+import br.com.project.tasks.core.model.TaskInsertDTO;
+import br.com.project.tasks.core.model.TaskInsertDTOConverter;
 import br.com.project.tasks.service.TaskService;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/web")
+@RequestMapping("/task")
 public class TaskController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskController.class);
@@ -29,13 +31,15 @@ public class TaskController {
 
     private final TaskService taskService;
     private final TaskDTOConverter converter;
+    private final TaskInsertDTOConverter taskInsertDTOConverter;
 
-    public TaskController(TaskService taskService, TaskDTOConverter converter) {
+    public TaskController(TaskService taskService, TaskDTOConverter converter, TaskInsertDTOConverter taskInsertDTOConverter) {
         this.taskService = taskService;
         this.converter = converter;
+        this.taskInsertDTOConverter = taskInsertDTOConverter;
     }
 
-    @GetMapping("/list-task")
+    @GetMapping("/tasks")
     public Page<TaskDTO> getTasks(
             @RequestParam(required = false) String id,
             @RequestParam(required = false) String title,
@@ -48,10 +52,10 @@ public class TaskController {
                 .map(converter::convert);
     }
 
-    @PostMapping("/insert-task")
-    public Mono<TaskDTO> insertTask(@RequestBody TaskDTO taskDTO) {
-        return taskService.insert(converter.convert(taskDTO))
-                    .doOnNext(task -> LOGGER.info("task id save {}", taskDTO.getId()))
+    @PostMapping("/insert")
+    public Mono<TaskDTO> insertTask(@RequestBody TaskInsertDTO taskInsertDTO) {
+        return taskService.insert(taskInsertDTOConverter.convert(taskInsertDTO))
+                    .doOnNext(task -> LOGGER.info("task id save {}", task.getId()))
                     .map(converter::convert);
     }
 
