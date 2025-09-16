@@ -15,6 +15,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import br.com.project.tasks.core.Task;
 import br.com.project.tasks.core.model.TaskDTO;
 import br.com.project.tasks.core.model.TaskDTOConverter;
+import br.com.project.tasks.core.model.TaskInsertDTO;
+import br.com.project.tasks.core.model.TaskInsertDTOConverter;
 import br.com.project.tasks.data.web.TaskController;
 import br.com.project.tasks.service.TaskService;
 import reactor.core.publisher.Mono;
@@ -31,6 +33,9 @@ public class TaskControllerTest {
     @Mock
     private TaskDTOConverter taskDTOConverter;
 
+    @Mock
+    private TaskInsertDTOConverter taskInsertDTO;
+
     @Test
     public void controller_mustReturnOk_whenSaveSuccessfully() {
         Mockito.when(taskDTOConverter.convert(Mockito.any(Task.class))).thenReturn(new TaskDTO()); // return new
@@ -41,12 +46,12 @@ public class TaskControllerTest {
         WebTestClient webTestClient = WebTestClient.bindToController(taskController).build();
 
         webTestClient.post()
-                .uri("/web/insert-task")
-                .bodyValue(new TaskDTO())
+                .uri("/task/insert")
+                .bodyValue(new TaskInsertDTOConverter())
                 .exchange()
                 .expectStatus()
                 .isOk()
-                .expectBody(TaskDTO.class);
+                .expectBody(TaskInsertDTOConverter.class);
     }
 
     @Test
@@ -71,7 +76,7 @@ public class TaskControllerTest {
         WebTestClient webTestClient = WebTestClient.bindToController(taskController).build();
 
         webTestClient.delete()
-            .uri("/web/" + id)
+            .uri("/tasks/" + id)
             .exchange()
             .expectStatus()
             .isNoContent();

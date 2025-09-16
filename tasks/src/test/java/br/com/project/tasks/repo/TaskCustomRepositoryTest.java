@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import br.com.project.tasks.core.Task;
 import br.com.project.tasks.data.repository.TaskCustomRepository;
 import br.com.project.tasks.utils.TestUtils;
+import reactor.core.publisher.Mono;
 
 @SpringBootTest
 public class TaskCustomRepositoryTest {
@@ -29,9 +30,9 @@ public class TaskCustomRepositoryTest {
     void customRepository_mustReturnPageWithOneElement_whenSendTask() {
         Task task = TestUtils.buildValidTask();
         Mockito.when(mongoOperations.find(any(), any())).thenReturn(List.of(task));
-        Page<Task> result = taskCustomRepository.findPaginated(task, 0, 10);
+        Mono<Page<Task>> result = taskCustomRepository.findPaginated(task, 0, 10);
 
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(1, result.getNumberOfElements());
+        Assertions.assertEquals(1, result.block().getNumberOfElements());
     }
 }

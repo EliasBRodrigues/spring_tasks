@@ -31,7 +31,7 @@ public class TaskService {
                 .doOnError(error -> LOGGER.info("error during save task, id: ", task.getTitle(), error));
     }
 
-    public Page<Task> findPaginated(Task task, Integer pageNumber, Integer pageSize) {
+    public Mono<Page<Task>> findPaginated(Task task, Integer pageNumber, Integer pageSize) {
         return taskCustomRepository.findPaginated(task, pageNumber, pageSize);
     }
 
