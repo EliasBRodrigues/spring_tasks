@@ -1,9 +1,6 @@
 package br.com.project.tasks.core.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
