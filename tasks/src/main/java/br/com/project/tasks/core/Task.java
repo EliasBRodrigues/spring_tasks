@@ -30,6 +30,13 @@ public class Task {
         return builderFrom(this).withTaskState(TaskState.INSERT).build();
     }
 
+    public Task update(Task oldTask) {
+        return builderFrom(this)
+            // .withId(oldTask.getId())
+            .withTaskState(oldTask.getState())
+            .build();
+    }
+
     public String getId(){
         return id;
     }

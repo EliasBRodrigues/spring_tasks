@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import br.com.project.tasks.core.Task;
+import br.com.project.tasks.core.error.TaskNotFoundException;
 import br.com.project.tasks.data.repository.TaskCustomRepository;
 import br.com.project.tasks.data.repository.TaskRepository;
 import br.com.project.tasks.data.web.TaskController;
@@ -23,6 +24,10 @@ public class TaskService {
         this.taskCustomRepository = taskCustomRepository;
     }
 
+    public Mono<Page<Task>> findPaginated(Task task, Integer pageNumber, Integer pageSize) {
+        return taskCustomRepository.findPaginated(task, pageNumber, pageSize);
+    }
+
     // Mono: fluxo de dados que tem um item/ou nenhum
     public Mono<Task> insert(Task task) {
         return Mono.just(task)
@@ -31,17 +36,20 @@ public class TaskService {
                 .doOnError(error -> LOGGER.info("error during save task, id: ", task.getTitle(), error));
     }
 
-    public Mono<Page<Task>> findPaginated(Task task, Integer pageNumber, Integer pageSize) {
-        return taskCustomRepository.findPaginated(task, pageNumber, pageSize);
-    }
-
     private Mono<Task> save(Task task) {
         return Mono.just(task).doOnNext(t -> LOGGER.info("saving task with title", task.getTitle()))
-                .map(taskRepository::save);
+                .flatMap(taskRepository::save); // enviar atributo reativo
     }
 
-    // route returns void
+    public Mono<Task> update(Task task) {
+        return taskRepository.findById(task.getId())
+            .map(task::update)
+            .flatMap(taskRepository::save)
+            .switchIfEmpty(Mono.error(TaskNotFoundException::new))
+            .doOnError(e -> LOGGER.error("Error during update task id {}", task.getId(), e.getMessage()));
+    }
+
     public Mono<Void> deleteById(String id) {
-        return Mono.fromRunnable(() -> taskRepository.deleteById(id));
+       return taskRepository.deleteById(id);
     }
 }

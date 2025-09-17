@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.project.tasks.core.constant.TaskState;
 import br.com.project.tasks.core.model.TaskDTO;
-import br.com.project.tasks.core.model.TaskDTOConverter;
 import br.com.project.tasks.core.model.TaskInsertDTO;
-import br.com.project.tasks.core.model.TaskInsertDTOConverter;
+import br.com.project.tasks.core.model.TaskUpdateDTO;
+import br.com.project.tasks.core.model.func.TaskDTOConverter;
+import br.com.project.tasks.core.model.func.TaskInsertDTOConverter;
+import br.com.project.tasks.core.model.func.TaskUpdateDTOConverter;
 import br.com.project.tasks.service.TaskService;
 import reactor.core.publisher.Mono;
 
@@ -32,15 +35,17 @@ public class TaskController {
     private final TaskService taskService;
     private final TaskDTOConverter converter;
     private final TaskInsertDTOConverter taskInsertDTOConverter;
+    private final TaskUpdateDTOConverter taskUpdateDTOConverter;
 
-    public TaskController(TaskService taskService, TaskDTOConverter converter, TaskInsertDTOConverter taskInsertDTOConverter) {
+    public TaskController(TaskService taskService, TaskDTOConverter converter, TaskInsertDTOConverter taskInsertDTOConverter, TaskUpdateDTOConverter taskUpdateDTOConverter) {
         this.taskService = taskService;
         this.converter = converter;
         this.taskInsertDTOConverter = taskInsertDTOConverter;
+        this.taskUpdateDTOConverter = taskUpdateDTOConverter;
     }
 
     @GetMapping("/tasks")
-    public Page<TaskDTO> getTasks(
+    public Mono<Page<TaskDTO>> getTasks(
             @RequestParam(required = false) String id,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String description,
@@ -48,8 +53,9 @@ public class TaskController {
             @RequestParam(required = false) TaskState state,
             @RequestParam(value = "pageNumber", defaultValue = "0") Integer pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
-        return taskService.findPaginated(converter.convert(id, title, description, priority, state), pageNumber, pageSize)
-                .map(converter::convert);
+        return taskService.findPaginated(
+                    converter.convert(id, title, description, priority, state), pageNumber, pageSize)
+                    .map(it -> it.map(converter::convert));
     }
 
     @PostMapping("/insert")
@@ -57,6 +63,11 @@ public class TaskController {
         return taskService.insert(taskInsertDTOConverter.convert(taskInsertDTO))
                     .doOnNext(task -> LOGGER.info("task id save {}", task.getId()))
                     .map(converter::convert);
+    }
+
+    @PutMapping("/update")
+    public Mono<TaskDTO> updateTask(@RequestBody TaskUpdateDTO taskUpdateDTO) {
+        return taskService.update(taskUpdateDTOConverter.convert(taskUpdateDTO)).doOnNext(it -> LOGGER.info("updated task id", it.getId())).map(converter::convert);
     }
 
     @DeleteMapping("/{id}")
