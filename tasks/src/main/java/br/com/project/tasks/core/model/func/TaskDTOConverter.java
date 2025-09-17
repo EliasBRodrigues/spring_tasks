@@ -1,4 +1,4 @@
-package br.com.project.tasks.core.model;
+package br.com.project.tasks.core.model.func;
 
 import java.util.Optional;
 
@@ -6,11 +6,11 @@ import org.springframework.stereotype.Component;
 
 import br.com.project.tasks.core.Task;
 import br.com.project.tasks.core.constant.TaskState;
+import br.com.project.tasks.core.model.TaskDTO;
 
 @Component
 public class TaskDTOConverter {
 
-    // transform Model -> DTO
     public TaskDTO convert(Task task) {
         return Optional.ofNullable(task)
                 .map(source -> {
