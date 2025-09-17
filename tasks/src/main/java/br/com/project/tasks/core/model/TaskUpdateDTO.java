@@ -7,17 +7,17 @@ import lombok.Data;
 
 @Data
 public class TaskUpdateDTO {
-    @NotBlank(message = "invalid value in ID")
+    @NotBlank(message = "{invalid.id}")
     private String id;
 
-    @NotBlank(message = "invalid value in title")
+    @NotBlank(message = "{invalid.title}")
     @Size(min = 3, max = 20, message = "title must 3-20 caracters")
     private String title;
 
-    @NotBlank(message = "invalid value in description")
+    @NotBlank(message = "{invalid.description}")
     @Size(min = 10, max = 50, message = "title must 3-20 caracters")
     private String description;
 
-    @Min(value = 1, message = "priority must be max than 0")
+    @Min(value = 1, message = "{invalid.priority}")
     private Integer priority;
 }
