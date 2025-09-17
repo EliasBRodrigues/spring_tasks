@@ -14,9 +14,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import br.com.project.tasks.core.Task;
 import br.com.project.tasks.core.model.TaskDTO;
-import br.com.project.tasks.core.model.TaskDTOConverter;
 import br.com.project.tasks.core.model.TaskInsertDTO;
-import br.com.project.tasks.core.model.TaskInsertDTOConverter;
+import br.com.project.tasks.core.model.func.TaskDTOConverter;
+import br.com.project.tasks.core.model.func.TaskInsertDTOConverter;
 import br.com.project.tasks.data.web.TaskController;
 import br.com.project.tasks.service.TaskService;
 import reactor.core.publisher.Mono;
@@ -57,11 +57,11 @@ public class TaskControllerTest {
     @Test
     public void controller_mustReturnOk_whenGetSuccessfully() {
 
-        Mockito.when(taskService.findPaginated(any(), anyInt(), anyInt())).thenReturn(Page.empty());
+        Mockito.when(taskService.findPaginated(any(), anyInt(), anyInt())).thenReturn(Mono.just(Page.empty()));
 
         WebTestClient webTestClient = WebTestClient.bindToController(taskController).build();
 
-        webTestClient.get().uri("/web/list-task")
+        webTestClient.get().uri("/task/tasks")
             .exchange()
             .expectStatus().isAccepted()
             .expectBody(TaskDTO.class);

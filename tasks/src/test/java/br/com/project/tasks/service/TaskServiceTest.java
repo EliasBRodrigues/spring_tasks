@@ -2,8 +2,10 @@ package br.com.project.tasks.service;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,6 +19,7 @@ import br.com.project.tasks.core.Task;
 import br.com.project.tasks.data.repository.TaskCustomRepository;
 import br.com.project.tasks.data.repository.TaskRepository;
 import br.com.project.tasks.utils.TestUtils;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @SpringBootTest
@@ -35,7 +38,7 @@ public class TaskServiceTest {
     void service_mustReturnTask_whenInsertSuccessfully(){
         Task task = TestUtils.buildValidTask();
 
-        Mockito.when(taskRepository.save(Mockito.any())).thenReturn(task);
+        Mockito.when(taskRepository.save(Mockito.any())).thenReturn(Mono.just(task));
 
         StepVerifier.create(taskService.insert(task))
                         .then(() -> Mockito.verify(taskRepository, 
@@ -46,16 +49,17 @@ public class TaskServiceTest {
 
     @Test
     void service_mustReturnTask_whenDeleteSuccessfully() {
+        when(taskRepository.deleteById(anyString()).thenReturn(Mono.empty()));
         StepVerifier.create(taskService.deleteById("any-id"))
-                    .then(() -> verify(taskRepository, times(1)).deleteById(any()))
+                    .then(() -> verify(taskRepository, times(1)).deleteById(Mono.just(any())))
                     .verifyComplete();
     }
 
     @Test
     void service_mustReturnTask_whenFindPaginated() {
         Task task = TestUtils.buildValidTask();
-        Mockito.when(taskCustomRepository.findPaginated(any(), anyInt(), anyInt())).thenReturn(Page.empty());
-        Page<Task> result = taskService.findPaginated(task, 0, 10);
+        Mockito.when(taskCustomRepository.findPaginated(any(), anyInt(), anyInt())).thenReturn(Mono.just(Page.empty()));
+        Mono<Page<Task>> result = taskService.findPaginated(task, 0, 10);
         Assertions.assertNotNull(result);
         Mockito.verify(taskCustomRepository, times(1)).findPaginated(any(), anyInt(), anyInt());
     }

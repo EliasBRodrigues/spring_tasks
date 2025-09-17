@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import br.com.project.tasks.core.Task;
 import br.com.project.tasks.core.constant.TaskState;
 import br.com.project.tasks.core.model.TaskDTO;
-import br.com.project.tasks.core.model.TaskDTOConverter;
+import br.com.project.tasks.core.model.func.TaskDTOConverter;
 import br.com.project.tasks.utils.TestUtils;
 
 @SpringBootTest
