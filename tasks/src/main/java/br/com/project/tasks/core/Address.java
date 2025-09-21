@@ -18,7 +18,7 @@ public class Address {
     @JsonProperty("bairro")
     private String neighborhood;
 
-    @JsonProperty("localildade")
+    @JsonProperty("localidade")
     private String city;
 
     @JsonProperty("estado")
