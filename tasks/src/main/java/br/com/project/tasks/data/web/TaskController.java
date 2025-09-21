@@ -77,4 +77,9 @@ public class TaskController {
         flatMap(taskService::deleteById);
     }
 
+    @PostMapping("/start-task") // retornar dados completos
+    public Mono<TaskDTO> startTask(@RequestParam String id, @RequestParam String zipcode){
+        return taskService.startTask(id, zipcode).map(converter::convert);
+    }
+
 }
