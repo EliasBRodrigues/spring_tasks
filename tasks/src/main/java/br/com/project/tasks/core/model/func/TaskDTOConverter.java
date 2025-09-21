@@ -20,6 +20,7 @@ public class TaskDTOConverter {
                     taskDTO.setDescription(source.getDescription());
                     taskDTO.setPriority(source.getPriority());
                     taskDTO.setState(source.getState());
+                    taskDTO.setAddress(source.getAddress());
                     return taskDTO;
                 }).orElse(null);
     }
