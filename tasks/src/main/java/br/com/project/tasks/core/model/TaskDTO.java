@@ -1,13 +1,23 @@
 package br.com.project.tasks.core.model;
 
+import br.com.project.tasks.core.Address;
 import br.com.project.tasks.core.constant.TaskState;
 
 public class TaskDTO {
-    String id;
-    String title;
-    String description;
-    Integer priority;
-    TaskState state;
+    private String id;
+    private String title;
+    private String description;
+    private Integer priority;
+    private TaskState state;
+    private Address address;
+
+    public Address getAddress() {
+        return this.address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
 
      public String getId() {
         return this.id;
